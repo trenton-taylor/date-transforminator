@@ -1,11 +1,12 @@
 package com.bluechipfinancial.datetransforminator
 
 import cats.effect.IO
+import com.bluechipfinancial.datetransforminator.routes.Routes
 import org.http4s.*
 import org.http4s.implicits.*
 import munit.CatsEffectSuite
 
-class ServiceSpec extends CatsEffectSuite:
+class DateServiceSpec extends CatsEffectSuite:
 
   test("HelloWorld returns status code 200") {
     assertIO(retHelloWorld.map(_.status) ,Status.Ok)
@@ -17,5 +18,5 @@ class ServiceSpec extends CatsEffectSuite:
 
   private[this] val retHelloWorld: IO[Response[IO]] = 
     val getHW = Request[IO](Method.GET, uri"/hello/world")
-    val helloWorld = Service.impl[IO]
-    DateTransforminatorRoutes.helloWorldRoutes(helloWorld).orNotFound(getHW)
+    val helloWorld = DateService.impl[IO]
+    Routes.helloWorldRoutes(helloWorld).orNotFound(getHW)
