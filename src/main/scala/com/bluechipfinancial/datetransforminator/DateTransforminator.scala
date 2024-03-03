@@ -25,7 +25,7 @@ case class FileRequest(fileSource: String, fromDate: String, toDate: String)
 val logger = LoggerFactory.getLogger(DateTransforminator.getClass.getName)
 
 object DateTransforminator extends IOApp {
-  
+
   val internalServerError = ErrorResponse(500, "Internal Server Error.")
   val notFoundError = ErrorResponse(404, "Resource not found.")
 
@@ -53,8 +53,8 @@ object DateTransforminator extends IOApp {
                try{
                  Ok(Response(r).asJson)
                } catch {
-                 case e: CustomException => Ok(ErrorResponse(e))
-                 case e: Exception => Ok(ErrorResponse(e, 500, "Internal Server Error").asJson)
+                 case e: CustomException => BadRequest(ErrorResponse(e))
+                 case e: Exception => InternalServerError(ErrorResponse(e, 500, "Internal Server Error").asJson)
                }
              }
            } yield resp
@@ -66,9 +66,9 @@ object DateTransforminator extends IOApp {
             try{
               Ok(Response(r).asJson)
             } catch {
-              case e: FileNotFoundException => Ok(ErrorResponse(e, 400, "File " + r.fileSource + " was not found!").asJson)
-              case e: CustomException => Ok(ErrorResponse(e))
-              case e: Exception => Ok(ErrorResponse(e, 500, "Internal Server Error").asJson)
+              case e: FileNotFoundException => BadRequest(ErrorResponse(e, 400, "File " + r.fileSource + " was not found!").asJson)
+              case e: CustomException => BadRequest(ErrorResponse(e))
+              case e: Exception => InternalServerError(ErrorResponse(e, 500, "Internal Server Error").asJson)
             }
           }
         } yield resp
@@ -77,7 +77,7 @@ object DateTransforminator extends IOApp {
   val healthCheckRoutes = {
     HttpRoutes.of[IO] {
       case GET -> Root / "health" => Ok("ok")
-      case _ => Ok(notFoundError.asJson)
+      case _ => NotFound(notFoundError.asJson)
     }
   }
 

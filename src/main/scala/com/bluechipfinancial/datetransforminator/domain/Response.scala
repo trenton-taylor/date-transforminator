@@ -46,13 +46,21 @@ object Response {
 
   def apply(request: FileRequest) = {
     val sourceText = scala.io.Source.fromResource(s"${filePrefix}/${request.fileSource}").getLines.mkString
-    val transformedText = transformDates(sourceText, request.fromDate, request.toDate)
-    new Response("file", request.fileSource, request.fromDate, request.toDate, sourceText, transformedText)
+    try {
+      val transformedText = transformDates(sourceText, request.fromDate, request.toDate)
+      new Response("file", request.fileSource, request.fromDate, request.toDate, sourceText, transformedText)
+    } catch {
+      case e: Exception => throw CustomException(400, s"Error converting dates in a file: ${e.getMessage}")
+    }
   }
 
   def apply(request: TextRequest) = {
-    val transformedText = transformDates(request.sourceText, request.fromDate, request.toDate)
-    new Response("text", request.sourceText, request.fromDate, request.toDate, request.sourceText, transformedText)
+    try {
+      val transformedText = transformDates(request.sourceText, request.fromDate, request.toDate)
+      new Response("text", request.sourceText, request.fromDate, request.toDate, request.sourceText, transformedText)
+    } catch {
+      case e: Exception => throw CustomException(400, s"Error converting dates in a text: ${e.getMessage}")
+    }
   }
 }
 
