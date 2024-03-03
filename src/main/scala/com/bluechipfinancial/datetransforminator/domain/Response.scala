@@ -8,7 +8,8 @@ case class Response(sourceType: String, source: String, fromDate: String, toDate
 
 val dateToRegexMappings = Map(
   "mm/dd/yyyy" -> "\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}",
-  "mm-dd-yyyy" -> "\\d{1,2}\\-\\d{1,2}\\-\\d{2,4}"
+  "mm-dd-yyyy" -> "\\d{1,2}\\-\\d{1,2}\\-\\d{2,4}",
+  "yyyy/mm/dd" -> "\\d{2,4}\\-\\d{1,2}\\-\\d{1,2}",
 )
 
 def transformDates(sourceText: String, fromDateString: String, toDateString: String): String = {
