@@ -25,7 +25,7 @@ There is also some configuration wiring via `application.conf` that allows for d
 
 Also, ChatGPT was not used in any way to generate any of the code in this repository. I can go through every part of this codebase and explain my work.
 
-The unit testing only tested the file/text and transforming logic. There could have been more testing around the actual service layer, but in the interest of time I only implemented testing around the conversion of dates and checking errors thrown etc. I am sure there are some test cases I missed as well. 
+The unit testing only tested the file/text and transforming logic. There could have been more testing around the actual service layer, but in the interest of time I only implemented testing around the conversion of dates and checking errors thrown etc. I am sure there are some test cases I missed as well. The unit tests can be ran by executing `sbt test` from the command line in the base repository folder.
 
 ### Base Assumptions
 There is no consistent way to map a Date (e.g. SimpleDateFormat) to a Regex pattern (e.g. `\d{1,2}\/\d{1,2}\/\d{2,4}` which seems to be the best way to find and replace strings that I know of, so the base assumption is that the inbound date formats to regex mappings are static. Therefore the `fromDate` formats are limited, but the `toDate` formats can be anything as long as they are valid `SimpleDateFormat` formats.
