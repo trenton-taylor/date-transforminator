@@ -8,7 +8,6 @@ import org.http4s.dsl.io.*
 import org.http4s.implicits.*
 import org.http4s.ember.server.*
 import cats.effect.*
-import com.typesafe.config.{Config, ConfigFactory}
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import org.http4s.circe.*
@@ -17,51 +16,16 @@ import org.http4s.server.middleware.ErrorHandling
 import org.slf4j.LoggerFactory
 
 import java.io.FileNotFoundException
-import java.text.SimpleDateFormat
+import com.bluechipfinancial.datetransforminator.domain.{CustomException, ErrorResponse, Response}
 
 case class TextRequest(sourceText: String, fromDate: String, toDate: String)
 
 case class FileRequest(fileSource: String, fromDate: String, toDate: String)
 
-case class Response(sourceType: String, source: String, fromDate: String, toDate: String, original: String, transformed: String)
-
-
-def transformDates(sourceText: String, fromDateString: String, toDateString: String): String = {
-  val fromDate = new SimpleDateFormat(fromDateString)
-  val toDate = new SimpleDateFormat(toDateString)
-  
-}
-
-val config: Config = ConfigFactory.load();
-
-object Response {
-
-  val filePrefix = config.getString("file.folder")
-  def apply(request: FileRequest) = {
-    val sourceText = scala.io.Source.fromResource(s"${filePrefix}/${request.fileSource}").getLines.mkString
-    val transformedText = transformDates(sourceText, request.fromDate, request.toDate)
-    new Response("file", request.fileSource, request.fromDate, request.toDate, sourceText, transformedText)
-  }
-
-  def apply(request: TextRequest) = {
-    val transformedText = transformDates(request.sourceText, request.fromDate, request.toDate)
-    new Response("text", request.sourceText, request.fromDate, request.toDate, request.sourceText, transformedText)
-  }
-}
-
-case class ErrorResponse(status: Integer, error: String)
-
-object ErrorResponse {
-
-  val logger = LoggerFactory.getLogger(getClass.getName)
-  def apply(t: Throwable, status: Integer, error: String) = {
-    logger.error("Exception found: " + t.getMessage)
-    new ErrorResponse(status, error)
-  }
-}
+val logger = LoggerFactory.getLogger(DateTransforminator.getClass.getName)
 
 object DateTransforminator extends IOApp {
-
+  
   val internalServerError = ErrorResponse(500, "Internal Server Error.")
   val notFoundError = ErrorResponse(404, "Resource not found.")
 
@@ -89,6 +53,7 @@ object DateTransforminator extends IOApp {
                try{
                  Ok(Response(r).asJson)
                } catch {
+                 case e: CustomException => Ok(ErrorResponse(e))
                  case e: Exception => Ok(ErrorResponse(e, 500, "Internal Server Error").asJson)
                }
              }
@@ -102,6 +67,7 @@ object DateTransforminator extends IOApp {
               Ok(Response(r).asJson)
             } catch {
               case e: FileNotFoundException => Ok(ErrorResponse(e, 400, "File " + r.fileSource + " was not found!").asJson)
+              case e: CustomException => Ok(ErrorResponse(e))
               case e: Exception => Ok(ErrorResponse(e, 500, "Internal Server Error").asJson)
             }
           }
