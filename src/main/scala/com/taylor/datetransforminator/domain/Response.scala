@@ -1,6 +1,6 @@
-package com.bluechipfinancial.datetransforminator.domain
+package com.taylor.datetransforminator.domain
 
-import com.bluechipfinancial.datetransforminator.{Cfg, FileRequest, TextRequest}
+import com.taylor.datetransforminator.{Cfg, FileRequest, TextRequest}
 
 import java.text.SimpleDateFormat
 import scala.util.matching.Regex
@@ -50,7 +50,9 @@ object Response {
       val transformedText = transformDates(sourceText, request.fromDate, request.toDate)
       new Response("file", request.fileSource, request.fromDate, request.toDate, sourceText, transformedText)
     } catch {
+      case ce: CustomException => throw CustomException(400, s"Error converting dates in a file: ${ce.msg}")
       case e: Exception => throw CustomException(400, s"Error converting dates in a file: ${e.getMessage}")
+
     }
   }
 
@@ -59,7 +61,8 @@ object Response {
       val transformedText = transformDates(request.sourceText, request.fromDate, request.toDate)
       new Response("text", request.sourceText, request.fromDate, request.toDate, request.sourceText, transformedText)
     } catch {
-      case e: Exception => throw CustomException(400, s"Error converting dates in a text: ${e.getMessage}")
+      case ce: CustomException => throw CustomException(400, s"Error converting dates in a text: ${ce.msg}")
+      case e: Exception => throw CustomException(400, s"Error converting dates in a file: ${e.getMessage}")
     }
   }
 }

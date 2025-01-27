@@ -1,4 +1,4 @@
-package com.bluechipfinancial.datetransforminator
+package com.taylor.datetransforminator
 
 import com.typesafe.config.{Config, ConfigFactory}
 

@@ -1,4 +1,4 @@
-package com.bluechipfinancial.datetransforminator
+package com.taylor.datetransforminator
 
 import cats.data.OptionT
 import cats.syntax.all.*
@@ -16,7 +16,7 @@ import org.http4s.server.middleware.ErrorHandling
 import org.slf4j.LoggerFactory
 
 import java.io.FileNotFoundException
-import com.bluechipfinancial.datetransforminator.domain.{CustomException, ErrorResponse, Response}
+import com.taylor.datetransforminator.domain.{CustomException, ErrorResponse, Response}
 
 case class TextRequest(sourceText: String, fromDate: String, toDate: String)
 

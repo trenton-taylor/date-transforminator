@@ -1,6 +1,6 @@
-package com.bluechipfinancial.datetransforminator
+package com.taylor.datetransforminator
 
-import com.bluechipfinancial.datetransforminator.domain.{CustomException, Response}
+import com.taylor.datetransforminator.domain.{CustomException, Response}
 import org.scalatest.flatspec.AnyFlatSpec
 
 import java.io.FileNotFoundException
@@ -37,7 +37,11 @@ class ResponseSpec extends AnyFlatSpec {
     try{
       Response(fileRequest)
     } catch {
-      case e: CustomException => assert(e.msg.equals("Date format 'mm-/d/-yyyyy' is not supported!"))
+      case e: CustomException => {
+        logger.info(s"${e.msg}")
+        assert(e.msg.equals("Error converting dates in a file: Date format 'mm-/d/-yyyyy' is not supported!"))
+      }
+      case x => logger.info(s"ERROR = ${x.toString}")
     }
   }
 
@@ -53,7 +57,7 @@ class ResponseSpec extends AnyFlatSpec {
     assert(result.transformed.equals("Today is 99-12-31 and tomorrow is 01-01-2000!"))
 
   }
-  
+
   "A request to translate dates for a text request" should "translate dates in the provided text" in {
     val textRequest = TextRequest(sampleTextNoDate, validDateFormat01, validDateFormat02)
     val result = Response(textRequest)
@@ -66,7 +70,10 @@ class ResponseSpec extends AnyFlatSpec {
     try {
       Response(textRequest)
     } catch {
-      case e: CustomException => assert(e.msg.equals("Date format 'mm-/d/-yyyyy' is not supported!"))
+      case e: CustomException =>
+        logger.info(s"Error msg is ${e.msg}")
+        assert(e.msg.equals("Error converting dates in a text: Date format 'mm-/d/-yyyyy' is not supported!"))
+      case x => logger.info(s"ERROR = ${x.toString}")
     }
   }
 
@@ -79,6 +86,6 @@ class ResponseSpec extends AnyFlatSpec {
     result = Response(textRequest)
     assert(result.transformed.equals("Today is 1999/12/31 and tomorrow is 01/01/2000!"))
   }
-  
+
 }
 

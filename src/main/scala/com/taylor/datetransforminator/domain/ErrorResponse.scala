@@ -1,4 +1,4 @@
-package com.bluechipfinancial.datetransforminator.domain
+package com.taylor.datetransforminator.domain
 
 import org.slf4j.LoggerFactory
 
